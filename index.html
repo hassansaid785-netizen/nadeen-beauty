@@ -25,7 +25,7 @@ select,input,textarea{width:100%;padding:10px;border-radius:10px;border:1px soli
 button{border:0;border-radius:12px;padding:11px;font:inherit;font-weight:bold;cursor:pointer;background:var(--g);color:#fff;margin-top:auto}
 .boxes{display:flex;flex-direction:column;gap:12px;padding:0 16px}
 .box{display:flex;gap:12px;align-items:center;flex-direction:row}
-.box .img{width:90px;flex:none;margin:0}
+.box .img{width:110px;flex:none;margin:0}
 .box .info{flex:1}
 .box .info button{width:100%}
 .bar{position:fixed;inset:auto 0 0 0;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:var(--card);border-top:1px solid var(--line);display:none;z-index:5}
@@ -67,19 +67,19 @@ const WA = "201025611482";
 const scents = ["Vanilla","J'adore","Good Girl","Crazy Love","Bleu Chanel","Gucci","Scandal"];
 // لإضافة منتج أو بوكس جديد: أضف سطر في القايمة، وللصورة اكتب اسم الملف في img
 const boxes = [
-  {id:"b1",name:"بوكس نادين",price:1570,d:"شامبو، بلسم، زيت، سيروم، مخمرية، هير ماسك",img:""},
-  {id:"b2",name:"نادين برو",price:1970,d:"نفس بوكس نادين + هير ميست",img:""},
-  {id:"b3",name:"نادين ماكس",price:2570,d:"نفس نادين برو + بودي سكراب",img:""}
+  {id:"b1",name:"بوكس نادين",price:1570,d:"شامبو، بلسم، زيت، سيروم، مخمرية، هير ماسك",img:"box1.jpg"},
+  {id:"b2",name:"نادين برو",price:1970,d:"نفس بوكس نادين + هير ميست",img:"box2.jpg"},
+  {id:"b3",name:"نادين ماكس",price:2570,d:"نفس نادين برو + بودي سكراب",img:"box3.jpg"}
 ];
 const products = [
-  {id:"p1",name:"شامبو",price:200,d:"لتنظيف لطيف للشعر",img:""},
-  {id:"p2",name:"بلسم",price:200,d:"ترطيب ونعومة",img:""},
-  {id:"p3",name:"زيت شعر",price:300,d:"تغذية وتلميع",img:""},
-  {id:"p4",name:"سيروم شعر",price:280,d:"طبيعي 100%",img:""},
-  {id:"p5",name:"مخمرية",price:190,d:"سبع ريحات",img:"",scent:true},
-  {id:"p6",name:"هير ماسك",price:400,d:"عناية مكثفة",img:""},
-  {id:"p7",name:"هير ميست",price:400,d:"ريحة تفضل طول اليوم",img:""},
-  {id:"p8",name:"بودي سكراب",price:600,d:"تقشير ونعومة للجسم",img:""}
+  {id:"p1",name:"شامبو",price:200,d:"لتنظيف لطيف للشعر",img:"shampoo.jpg.jpeg"},
+  {id:"p2",name:"بلسم",price:200,d:"ترطيب ونعومة",img:"conditioner.jpg.jpeg"},
+  {id:"p3",name:"زيت شعر",price:300,d:"تغذية وتلميع",img:"oil.jpg.jpeg"},
+  {id:"p4",name:"سيروم شعر",price:280,d:"طبيعي 100%",img:"serum.jpg.jpeg"},
+  {id:"p5",name:"مخمرية",price:190,d:"سبع ريحات",img:"mukhammariya.jpg.jpeg",scent:true},
+  {id:"p6",name:"هير ماسك",price:400,d:"عناية مكثفة",img:"mask.jpg.jpeg"},
+  {id:"p7",name:"هير ميست",price:400,d:"ريحة تفضل طول اليوم",img:"mist.jpg.jpeg"},
+  {id:"p8",name:"بودي سكراب",price:600,d:"تقشير ونعومة للجسم",img:"scrub.jpg.jpg"}
 ];
 let cart = {};
 const img = p => '<div class="img">' + (p.img ? '<img src="'+p.img+'" alt="'+p.name+'">' : 'صورة المنتج') + '</div>';
