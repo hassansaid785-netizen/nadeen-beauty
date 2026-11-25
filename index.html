@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>نادين بيوتي</title>
+<style>
+:root{--bg:#f6f3ec;--card:#fff;--ink:#1b2b22;--mut:#6b776f;--g:#1f4d3a;--gold:#c9a24b;--line:#e4dfd2;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101a15;--card:#18261f;--ink:#f1efe7;--mut:#a3b0a8;--g:#3f8f6b;--line:#2a3b32}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Tahoma,Arial,sans-serif;padding-bottom:90px}
+header{text-align:center;padding:36px 20px 28px;background:var(--g);color:#fff}
+header h1{margin:0;font-size:30px;letter-spacing:1px}
+header p{margin:8px 0 0;opacity:.85;font-size:14px}
+h2{font-size:20px;margin:26px 16px 12px;color:var(--g)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;display:flex;flex-direction:column}
+.img{aspect-ratio:1;border-radius:12px;background:linear-gradient(135deg,#e9e0c8,#c9a24b55);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--mut);margin-bottom:10px;overflow:hidden}
+.img img{width:100%;height:100%;object-fit:cover}
+.card h3{margin:0 0 4px;font-size:15px}
+.card .d{font-size:12px;color:var(--mut);margin:0 0 8px;min-height:30px}
+.price{font-weight:bold;color:var(--g);margin-bottom:8px}
+select,input,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;margin-bottom:8px}
+button{border:0;border-radius:12px;padding:11px;font:inherit;font-weight:bold;cursor:pointer;background:var(--g);color:#fff;margin-top:auto}
+.boxes{display:flex;flex-direction:column;gap:12px;padding:0 16px}
+.box{display:flex;gap:12px;align-items:center;flex-direction:row}
+.box .img{width:90px;flex:none;margin:0}
+.box .info{flex:1}
+.box .info button{width:100%}
+.bar{position:fixed;inset:auto 0 0 0;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:var(--card);border-top:1px solid var(--line);display:none;z-index:5}
+.bar button{width:100%;background:var(--gold);color:#1b1b1b}
+.sheet{position:fixed;inset:0;background:#0008;display:none;z-index:10;align-items:flex-end}
+.sheet.on{display:flex}
+.panel{background:var(--card);width:100%;max-height:88%;overflow:auto;border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px))}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+.qty button{width:30px;height:30px;padding:0;margin:0 6px}
+.total{font-weight:bold;font-size:17px;margin:14px 0}
+.wa{background:#25d366;color:#0b2b16;width:100%;padding:14px;font-size:16px}
+.x{background:none;color:var(--mut);width:100%;margin-top:6px}
+</style>
+</head>
+<body>
+<header><h1>Nadeen Beauty</h1><p>عناية بالشعر طبيعية 100% - الطلب عن طريق واتساب</p></header>
+
+<h2>البوكسات</h2>
+<div class="boxes" id="boxes"></div>
+
+<h2>المنتجات</h2>
+<div class="grid" id="products"></div>
+
+<div class="bar" id="bar"><button onclick="openCart()" id="barBtn"></button></div>
+
+<div class="sheet" id="sheet"><div class="panel">
+  <h2 style="margin:0 0 8px">سلة الطلب</h2>
+  <div id="items"></div>
+  <div class="total" id="total"></div>
+  <input id="name" placeholder="الاسم">
+  <input id="phone" placeholder="رقم الموبايل" inputmode="tel">
+  <textarea id="addr" rows="2" placeholder="العنوان بالتفصيل"></textarea>
+  <button class="wa" onclick="send()">ابعت الطلب على واتساب</button>
+  <button class="x" onclick="closeCart()">رجوع للتسوق</button>
+</div></div>
+
+<script>
+const WA = "201025611482";
+const scents = ["Vanilla","J'adore","Good Girl","Crazy Love","Bleu Chanel","Gucci","Scandal"];
+// لإضافة منتج أو بوكس جديد: أضف سطر في القايمة، وللصورة اكتب اسم الملف في img
+const boxes = [
+  {id:"b1",name:"بوكس نادين",price:1570,d:"شامبو، بلسم، زيت، سيروم، مخمرية، هير ماسك",img:""},
+  {id:"b2",name:"نادين برو",price:1970,d:"نفس بوكس نادين + هير ميست",img:""},
+  {id:"b3",name:"نادين ماكس",price:2570,d:"نفس نادين برو + بودي سكراب",img:""}
+];
+const products = [
+  {id:"p1",name:"شامبو",price:200,d:"لتنظيف لطيف للشعر",img:""},
+  {id:"p2",name:"بلسم",price:200,d:"ترطيب ونعومة",img:""},
+  {id:"p3",name:"زيت شعر",price:300,d:"تغذية وتلميع",img:""},
+  {id:"p4",name:"سيروم شعر",price:280,d:"طبيعي 100%",img:""},
+  {id:"p5",name:"مخمرية",price:190,d:"سبع ريحات",img:"",scent:true},
+  {id:"p6",name:"هير ماسك",price:400,d:"عناية مكثفة",img:""},
+  {id:"p7",name:"هير ميست",price:400,d:"ريحة تفضل طول اليوم",img:""},
+  {id:"p8",name:"بودي سكراب",price:600,d:"تقشير ونعومة للجسم",img:""}
+];
+let cart = {};
+const img = p => '<div class="img">' + (p.img ? '<img src="'+p.img+'" alt="'+p.name+'">' : 'صورة المنتج') + '</div>';
+
+document.getElementById("boxes").innerHTML = boxes.map(b =>
+  '<div class="card box">'+img(b)+'<div class="info"><h3>'+b.name+'</h3><p class="d">'+b.d+'</p><div class="price">'+b.price+' جنيه</div><button onclick="add(\''+b.id+'\')">أضف للسلة</button></div></div>').join("");
+
+document.getElementById("products").innerHTML = products.map(p =>
+  '<div class="card">'+img(p)+'<h3>'+p.name+'</h3><p class="d">'+p.d+'</p><div class="price">'+p.price+' جنيه</div>'+
+  (p.scent ? '<select id="s_'+p.id+'">'+scents.map(s=>'<option>'+s+'</option>').join("")+'</select>' : '')+
+  '<button onclick="add(\''+p.id+'\')">أضف للسلة</button></div>').join("");
+
+function add(id){
+  const item = [...boxes,...products].find(x=>x.id===id);
+  let key = id, label = item.name;
+  if(item.scent){ const s = document.getElementById("s_"+id).value; key = id+"|"+s; label = item.name+" ("+s+")"; }
+  if(!cart[key]) cart[key] = {name:label,price:item.price,qty:0};
+  cart[key].qty++;
+  refresh();
+}
+function change(key,d){ cart[key].qty += d; if(cart[key].qty<=0) delete cart[key]; refresh(); }
+function sum(){ return Object.values(cart).reduce((a,i)=>a+i.price*i.qty,0); }
+function count(){ return Object.values(cart).reduce((a,i)=>a+i.qty,0); }
+
+function refresh(){
+  const bar = document.getElementById("bar");
+  bar.style.display = count() ? "block" : "none";
+  document.getElementById("barBtn").textContent = "السلة ("+count()+") - "+sum()+" جنيه";
+  document.getElementById("items").innerHTML = Object.entries(cart).map(([k,i]) =>
+    '<div class="row"><span>'+i.name+'<br><small>'+i.price*i.qty+' جنيه</small></span><span class="qty"><button onclick="change(\''+k.replace(/'/g,"\\'")+'\',-1)">-</button>'+i.qty+'<button onclick="change(\''+k.replace(/'/g,"\\'")+'\',1)">+</button></span></div>').join("");
+  document.getElementById("total").textContent = "الإجمالي: "+sum()+" جنيه (غير شامل الشحن)";
+  if(!count()) closeCart();
+}
+function openCart(){ document.getElementById("sheet").classList.add("on"); }
+function closeCart(){ document.getElementById("sheet").classList.remove("on"); }
+
+function send(){
+  if(!count()) return;
+  const n = document.getElementById("name").value.trim();
+  const p = document.getElementById("phone").value.trim();
+  const a = document.getElementById("addr").value.trim();
+  let t = "أهلاً نادين بيوتي، عاوز أطلب:\n";
+  Object.values(cart).forEach(i => { t += "- "+i.name+" × "+i.qty+" = "+i.price*i.qty+" جنيه\n"; });
+  t += "\nالإجمالي: "+sum()+" جنيه\n";
+  if(n) t += "الاسم: "+n+"\n";
+  if(p) t += "الموبايل: "+p+"\n";
+  if(a) t += "العنوان: "+a+"\n";
+  window.open("https://wa.me/"+WA+"?text="+encodeURIComponent(t), "_blank");
+}
+</script>
+</body>
+</html>
