@@ -5,15 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>نادين بيوتي</title>
 <style>
-:root{--bg:#f6f3ec;--card:#fff;--ink:#1b2b22;--mut:#6b776f;--g:#1f4d3a;--gold:#c9a24b;--line:#e4dfd2;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101a15;--card:#18261f;--ink:#f1efe7;--mut:#a3b0a8;--g:#3f8f6b;--line:#2a3b32}}
+:root{--bg:#f6f3ec;--card:#fff;--ink:#1b2b22;--mut:#6b776f;--g:#1f4d3a;--gold:#c9a24b;--line:#e4dfd2;--pat:.07;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101a15;--card:#18261f;--ink:#f1efe7;--mut:#a3b0a8;--g:#3f8f6b;--line:#2a3b32;--pat:.05}}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:Tahoma,Arial,sans-serif;padding-bottom:90px}
-header{text-align:center;padding:28px 20px 24px;background:var(--g);color:#fff}
-.logo{display:block;margin:0 auto 12px;height:84px;background:#fff;border-radius:16px;padding:8px}
-header h1{margin:0;font-size:28px;letter-spacing:1px}
-header p{margin:8px 0 0;opacity:.85;font-size:14px}
+/* خلفية اللوجو المتكررة: 150px = حجم اللوجو، و --pat = الشفافية */
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:url("logo.png") center top/150px auto repeat;opacity:var(--pat)}
+header{text-align:center;padding:22px 20px 16px;background:#fff;border-bottom:3px solid var(--gold)}
+.logo{display:block;margin:0 auto;width:min(72%,320px);height:auto}
+header p{margin:10px 0 0;color:#1f4d3a;font-size:14px;font-weight:bold}
 .note{background:var(--gold);color:#1b1b1b;text-align:center;font-size:13px;font-weight:bold;padding:8px 12px}
 h2{font-size:20px;margin:26px 16px 12px;color:var(--g)}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 16px}
@@ -44,8 +45,7 @@ button{border:0;border-radius:12px;padding:11px;font:inherit;font-weight:bold;cu
 </head>
 <body>
 <header>
-  <img class="logo" src="logo.png" alt="Nadeen Beauty" onerror="this.style.display='none'">
-  <h1>Nadeen Beauty</h1>
+  <img class="logo" src="logo.png" alt="Nadeen Beauty">
   <p>عناية بالشعر طبيعية 100% - الطلب عن طريق واتساب</p>
 </header>
 <div class="note">الأسعار غير شاملة الشحن</div>
@@ -74,15 +74,15 @@ const WA = "201025611482";
 const scents = ["Vanilla","J'adore","Good Girl","Crazy Love","Bleu Chanel","Gucci","Scandal"];
 // لإضافة منتج أو بوكس جديد: أضف سطر في القايمة، وللصورة اكتب اسم الملف في img
 const boxes = [
-  {id:"b1",name:"بوكس نادين",price:1570,d:"شامبو، بلسم، زيت، سيروم، مخمرية، هير ماسك",img:"box1.jpg"},
-  {id:"b2",name:"نادين برو",price:1970,d:"نفس بوكس نادين + هير ميست",img:"box2.jpg"},
-  {id:"b3",name:"نادين ماكس",price:2570,d:"نفس نادين برو + بودي سكراب",img:"box3.jpg"}
+  {id:"b1",name:"البوكس العادي",price:1570,d:"شامبو، بلسم، زيت، سيروم، مخمرية، هير ماسك",img:"box1.jpg"},
+  {id:"b2",name:"برو بوكس",price:1970,d:"شامبو، بلسم، زيت، سيروم، مخمرية، هير ماسك، هير ميست",img:"box2.jpg"},
+  {id:"b3",name:"هيرو بوكس",price:2570,d:"شامبو، بلسم، زيت، سيروم، مخمرية، هير ماسك، هير ميست، بودي سكراب",img:"box3.jpg"}
 ];
 const products = [
   {id:"p1",name:"شامبو",price:200,d:"لتنظيف لطيف للشعر",img:"shampoo.jpg.jpeg"},
   {id:"p2",name:"بلسم",price:200,d:"ترطيب ونعومة",img:"conditioner.jpg.jpeg"},
-  {id:"p3",name:"زيت شعر",price:300,d:"تغذية وتكثيف وتلميع",img:"oil.jpg.jpeg"},
-  {id:"p4",name:"سيروم شعر",price:280,d:"أفضل من طبيعي 100% - لمعان ونعومة للشعر",img:"serum.jpg.jpeg"},
+  {id:"p3",name:"زيت شعر",price:300,d:"تغذية ولمعان وتكثيف",img:"oil.jpg.jpeg"},
+  {id:"p4",name:"سيروم شعر",price:280,d:"لمعان أكتر وتقليل هيشان الشعر",img:"serum.jpg.jpeg"},
   {id:"p5",name:"مخمرية",price:190,d:"7 عطور لتعطير جسمك",img:"mukhammariya.jpg.jpeg",scent:true},
   {id:"p6",name:"هير ماسك",price:400,d:"عناية مكثفة",img:"mask.jpg.jpeg"},
   {id:"p7",name:"هير ميست",price:400,d:"ريحة تفضل طول اليوم",img:"mist.jpg.jpeg"},
