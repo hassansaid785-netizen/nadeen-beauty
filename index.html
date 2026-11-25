@@ -10,9 +10,11 @@
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:Tahoma,Arial,sans-serif;padding-bottom:90px}
-header{text-align:center;padding:36px 20px 28px;background:var(--g);color:#fff}
-header h1{margin:0;font-size:30px;letter-spacing:1px}
+header{text-align:center;padding:28px 20px 24px;background:var(--g);color:#fff}
+.logo{display:block;margin:0 auto 12px;height:84px;background:#fff;border-radius:16px;padding:8px}
+header h1{margin:0;font-size:28px;letter-spacing:1px}
 header p{margin:8px 0 0;opacity:.85;font-size:14px}
+.note{background:var(--gold);color:#1b1b1b;text-align:center;font-size:13px;font-weight:bold;padding:8px 12px}
 h2{font-size:20px;margin:26px 16px 12px;color:var(--g)}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 16px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;display:flex;flex-direction:column}
@@ -41,7 +43,12 @@ button{border:0;border-radius:12px;padding:11px;font:inherit;font-weight:bold;cu
 </style>
 </head>
 <body>
-<header><h1>Nadeen Beauty</h1><p>عناية بالشعر طبيعية 100% - الطلب عن طريق واتساب</p></header>
+<header>
+  <img class="logo" src="logo.png" alt="Nadeen Beauty" onerror="this.style.display='none'">
+  <h1>Nadeen Beauty</h1>
+  <p>عناية بالشعر طبيعية 100% - الطلب عن طريق واتساب</p>
+</header>
+<div class="note">الأسعار غير شاملة الشحن</div>
 
 <h2>البوكسات</h2>
 <div class="boxes" id="boxes"></div>
@@ -74,9 +81,9 @@ const boxes = [
 const products = [
   {id:"p1",name:"شامبو",price:200,d:"لتنظيف لطيف للشعر",img:"shampoo.jpg.jpeg"},
   {id:"p2",name:"بلسم",price:200,d:"ترطيب ونعومة",img:"conditioner.jpg.jpeg"},
-  {id:"p3",name:"زيت شعر",price:300,d:"تغذية وتلميع",img:"oil.jpg.jpeg"},
-  {id:"p4",name:"سيروم شعر",price:280,d:"طبيعي 100%",img:"serum.jpg.jpeg"},
-  {id:"p5",name:"مخمرية",price:190,d:"سبع ريحات",img:"mukhammariya.jpg.jpeg",scent:true},
+  {id:"p3",name:"زيت شعر",price:300,d:"تغذية وتكثيف وتلميع",img:"oil.jpg.jpeg"},
+  {id:"p4",name:"سيروم شعر",price:280,d:"أفضل من طبيعي 100% - لمعان ونعومة للشعر",img:"serum.jpg.jpeg"},
+  {id:"p5",name:"مخمرية",price:190,d:"7 عطور لتعطير جسمك",img:"mukhammariya.jpg.jpeg",scent:true},
   {id:"p6",name:"هير ماسك",price:400,d:"عناية مكثفة",img:"mask.jpg.jpeg"},
   {id:"p7",name:"هير ميست",price:400,d:"ريحة تفضل طول اليوم",img:"mist.jpg.jpeg"},
   {id:"p8",name:"بودي سكراب",price:600,d:"تقشير ونعومة للجسم",img:"scrub.jpg.jpg"}
@@ -123,7 +130,7 @@ function send(){
   const a = document.getElementById("addr").value.trim();
   let t = "أهلاً نادين بيوتي، عاوز أطلب:\n";
   Object.values(cart).forEach(i => { t += "- "+i.name+" × "+i.qty+" = "+i.price*i.qty+" جنيه\n"; });
-  t += "\nالإجمالي: "+sum()+" جنيه\n";
+  t += "\nالإجمالي: "+sum()+" جنيه (غير شامل الشحن)\n";
   if(n) t += "الاسم: "+n+"\n";
   if(p) t += "الموبايل: "+p+"\n";
   if(a) t += "العنوان: "+a+"\n";
