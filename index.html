@@ -92,7 +92,7 @@ const products = [
   {id:"p8",name:"بودي سكراب",price:600,d:"تقشير ونعومة للجسم",img:"scrub.jpg.jpg"}
 ];
 let cart = {};
-const priceHtml = p => p.old ? '<div class="price">'+p.price+' جنيه <span class="old">'+p.old+' جنيه</span></div><div class="sale">عرض البلاك فريداي لفترة محدودة</div>' : '<div class="price">'+p.price+' جنيه</div>';
+const priceHtml = p => p.old ? '<div class="price">'+p.price+' جنيه <span class="old">'+p.old+' جنيه</span></div><div class="sale">عرض البلاك فراي داي لفترة محدودة</div>' : '<div class="price">'+p.price+' جنيه</div>';
 const img = p => '<div class="img">' + (p.badge ? '<span class="badge">'+p.badge+'</span>' : '') + (p.img ? '<img src="'+p.img+'" alt="'+p.name+'">' : 'صورة المنتج') + '</div>';
 
 document.getElementById("boxes").innerHTML = boxes.map(b =>
