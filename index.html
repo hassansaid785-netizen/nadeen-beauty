@@ -10,7 +10,7 @@
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:Tahoma,Arial,sans-serif;padding-bottom:90px}
-/* خلفية اللوجو المتكررة: 150px = حجم اللوجو، و --pat = الشفافية */
+/* خلفية اللوجو المتكررة: عدّل --pat للشفافية و background-size للحجم */
 body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:url("logo.png") center top/150px auto repeat;opacity:var(--pat)}
 header{text-align:center;padding:22px 20px 16px;background:#fff;border-bottom:3px solid var(--gold)}
 .logo{display:block;margin:0 auto;width:min(72%,320px);height:auto}
@@ -19,11 +19,14 @@ header p{margin:10px 0 0;color:#1f4d3a;font-size:14px;font-weight:bold}
 h2{font-size:20px;margin:26px 16px 12px;color:var(--g)}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 16px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;display:flex;flex-direction:column}
-.img{aspect-ratio:1;border-radius:12px;background:linear-gradient(135deg,#e9e0c8,#c9a24b55);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--mut);margin-bottom:10px;overflow:hidden}
+.img{position:relative;aspect-ratio:1;border-radius:12px;background:linear-gradient(135deg,#e9e0c8,#c9a24b55);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--mut);margin-bottom:10px;overflow:hidden}
 .img img{width:100%;height:100%;object-fit:cover}
 .card h3{margin:0 0 4px;font-size:15px}
 .card .d{font-size:12px;color:var(--mut);margin:0 0 8px;min-height:30px}
 .price{font-weight:bold;color:var(--g);margin-bottom:8px}
+.old{color:var(--mut);text-decoration:line-through;font-size:13px;font-weight:normal;margin-right:6px}
+.sale{font-size:11px;font-weight:bold;color:#c0392b;margin:-4px 0 8px}
+.badge{position:absolute;top:8px;right:8px;z-index:1;background:#111;color:var(--gold);font-size:11px;font-weight:bold;padding:4px 9px;border-radius:999px}
 select,input,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;margin-bottom:8px}
 button{border:0;border-radius:12px;padding:11px;font:inherit;font-weight:bold;cursor:pointer;background:var(--g);color:#fff;margin-top:auto}
 .boxes{display:flex;flex-direction:column;gap:12px;padding:0 16px}
@@ -74,7 +77,7 @@ const WA = "201025611482";
 const scents = ["Vanilla","J'adore","Good Girl","Crazy Love","Bleu Chanel","Gucci","Scandal"];
 // لإضافة منتج أو بوكس جديد: أضف سطر في القايمة، وللصورة اكتب اسم الملف في img
 const boxes = [
-  {id:"b1",name:"البوكس العادي",price:1570,d:"شامبو، بلسم، زيت، سيروم، مخمرية، هير ماسك",img:"box1.jpg"},
+  {id:"b1",name:"البوكس العادي",price:1100,old:1570,badge:"خصم 30%",d:"شامبو، بلسم، زيت، سيروم، مخمرية، هير ماسك",img:"box1.jpg"},
   {id:"b2",name:"برو بوكس",price:1970,d:"شامبو، بلسم، زيت، سيروم، مخمرية، هير ماسك، هير ميست",img:"box2.jpg"},
   {id:"b3",name:"هيرو بوكس",price:2570,d:"شامبو، بلسم، زيت، سيروم، مخمرية، هير ماسك، هير ميست، بودي سكراب",img:"box3.jpg"}
 ];
@@ -89,13 +92,14 @@ const products = [
   {id:"p8",name:"بودي سكراب",price:600,d:"تقشير ونعومة للجسم",img:"scrub.jpg.jpg"}
 ];
 let cart = {};
-const img = p => '<div class="img">' + (p.img ? '<img src="'+p.img+'" alt="'+p.name+'">' : 'صورة المنتج') + '</div>';
+const priceHtml = p => p.old ? '<div class="price">'+p.price+' جنيه <span class="old">'+p.old+' جنيه</span></div><div class="sale">عرض البلاك فريداي لفترة محدودة</div>' : '<div class="price">'+p.price+' جنيه</div>';
+const img = p => '<div class="img">' + (p.badge ? '<span class="badge">'+p.badge+'</span>' : '') + (p.img ? '<img src="'+p.img+'" alt="'+p.name+'">' : 'صورة المنتج') + '</div>';
 
 document.getElementById("boxes").innerHTML = boxes.map(b =>
-  '<div class="card box">'+img(b)+'<div class="info"><h3>'+b.name+'</h3><p class="d">'+b.d+'</p><div class="price">'+b.price+' جنيه</div><button onclick="add(\''+b.id+'\')">أضف للسلة</button></div></div>').join("");
+  '<div class="card box">'+img(b)+'<div class="info"><h3>'+b.name+'</h3><p class="d">'+b.d+'</p>'+priceHtml(b)+'<button onclick="add(\''+b.id+'\')">أضف للسلة</button></div></div>').join("");
 
 document.getElementById("products").innerHTML = products.map(p =>
-  '<div class="card">'+img(p)+'<h3>'+p.name+'</h3><p class="d">'+p.d+'</p><div class="price">'+p.price+' جنيه</div>'+
+  '<div class="card">'+img(p)+'<h3>'+p.name+'</h3><p class="d">'+p.d+'</p>'+priceHtml(p)+
   (p.scent ? '<select id="s_'+p.id+'">'+scents.map(s=>'<option>'+s+'</option>').join("")+'</select>' : '')+
   '<button onclick="add(\''+p.id+'\')">أضف للسلة</button></div>').join("");
 
