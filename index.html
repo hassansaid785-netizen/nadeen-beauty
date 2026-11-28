@@ -47,6 +47,10 @@ button{border:0;border-radius:12px;padding:11px;font:inherit;font-weight:bold;cu
 .total{font-weight:bold;font-size:17px;margin:14px 0}
 .total div:nth-child(-n+2){font-size:14px;font-weight:normal;color:var(--mut);margin-bottom:4px}
 #gov{margin-top:14px}
+.alist{display:none;border:1px solid var(--line);border-radius:10px;background:var(--bg);max-height:210px;overflow:auto;margin:-4px 0 8px}
+.alist div{padding:11px 12px;border-bottom:1px solid var(--line);font-size:14px;cursor:pointer}
+.alist div:last-child{border-bottom:0}
+.alist .none{color:var(--mut);cursor:default;font-size:13px}
 .wa{background:#25d366;color:#0b2b16;width:100%;padding:14px;font-size:16px}
 .x{background:none;color:var(--mut);width:100%;margin-top:6px}
 </style>
@@ -70,7 +74,8 @@ button{border:0;border-radius:12px;padding:11px;font:inherit;font-weight:bold;cu
   <h2 style="margin:0 0 8px">سلة الطلب</h2>
   <div id="items"></div>
   <select id="gov" onchange="govChange()"></select>
-  <select id="area" onchange="renderTotal()" style="display:none"></select>
+  <input id="areaSearch" placeholder="اختار منطقتك أو اكتب اسمها للبحث" onfocus="openAreas()" oninput="findAreas()" autocomplete="off" style="display:none">
+  <div class="alist" id="areaList"></div>
   <div class="total" id="total"></div>
   <input id="name" placeholder="الاسم">
   <input id="phone" placeholder="رقم الموبايل" inputmode="tel">
@@ -124,19 +129,37 @@ const AREAS = {
 const govNames = ["القاهرة","الجيزة"].concat(Object.keys(FEES));
 document.getElementById("gov").innerHTML = '<option value="">اختار المحافظة</option>' + govNames.map(g=>'<option>'+g+'</option>').join("");
 function areaFees(g){ const o = {}; for(const f in AREAS[g]) AREAS[g][f].forEach(n => { o[n] = +f; }); return o; }
+let chosenArea = "";
+const norm = t => t.replace(/[\u064B-\u065F\u0640]/g,"").replace(/[أإآ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي").replace(/[\u0660-\u0669]/g,d=>d.charCodeAt(0)-1632).trim();
 function govChange(){
-  const g = document.getElementById("gov").value, a = document.getElementById("area");
-  if(AREAS[g]){
-    const names = Object.keys(areaFees(g)).sort((x,y)=>x.localeCompare(y,"ar"));
-    a.innerHTML = '<option value="">اختار المنطقة</option>' + names.map(n=>'<option>'+n+'</option>').join("");
-    a.style.display = "block";
-  } else { a.innerHTML = ""; a.style.display = "none"; }
+  const g = document.getElementById("gov").value, a = document.getElementById("areaSearch"), l = document.getElementById("areaList");
+  chosenArea = ""; a.value = ""; l.innerHTML = ""; l.style.display = "none";
+  a.style.display = AREAS[g] ? "block" : "none";
+  renderTotal();
+}
+function findAreas(){
+  const g = document.getElementById("gov").value, q = norm(document.getElementById("areaSearch").value), l = document.getElementById("areaList");
+  chosenArea = ""; renderTotal();
+  const all = Object.keys(areaFees(g)).sort((x,y)=>x.localeCompare(y,"ar"));
+  const hits = q ? all.filter(n => norm(n).includes(q)) : all;
+  l.innerHTML = hits.length ? hits.map(n => '<div onclick="pickArea(this.textContent)">'+n+'</div>').join("") : '<div class="none">مفيش منطقة بالاسم ده، جرب كلمة تانية أو كلمنا على واتساب</div>';
+  l.style.display = "block";
+}
+function openAreas(){
+  if(chosenArea) document.getElementById("areaSearch").value = "";
+  findAreas();
+}
+function pickArea(n){
+  chosenArea = n;
+  document.getElementById("areaSearch").value = n;
+  document.getElementById("areaList").style.display = "none";
+  document.getElementById("areaSearch").blur();
   renderTotal();
 }
 function shipFee(){
   const g = document.getElementById("gov").value;
   if(!g) return null;
-  if(AREAS[g]){ const n = document.getElementById("area").value; return n ? areaFees(g)[n] : null; }
+  if(AREAS[g]){ return chosenArea ? areaFees(g)[chosenArea] : null; }
   return FEES[g];
 }
 function renderTotal(){
@@ -185,7 +208,7 @@ function send(){
   const f = shipFee();
   if(f === null){ alert("اختار المحافظة والمنطقة الأول"); return; }
   const g = document.getElementById("gov").value;
-  const ar = AREAS[g] ? " - "+document.getElementById("area").value : "";
+  const ar = AREAS[g] ? " - "+chosenArea : "";
   let t = "أهلاً نادين بيوتي، عاوز أطلب:\n";
   Object.values(cart).forEach(i => { t += "- "+i.name+" × "+i.qty+" = "+i.price*i.qty+" جنيه\n"; });
   t += "\nالمنتجات: "+sum()+" جنيه\n";
