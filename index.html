@@ -45,6 +45,8 @@ button{border:0;border-radius:12px;padding:11px;font:inherit;font-weight:bold;cu
 .row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
 .qty button{width:30px;height:30px;padding:0;margin:0 6px}
 .total{font-weight:bold;font-size:17px;margin:14px 0}
+.total div:nth-child(-n+2){font-size:14px;font-weight:normal;color:var(--mut);margin-bottom:4px}
+#gov{margin-top:14px}
 .wa{background:#25d366;color:#0b2b16;width:100%;padding:14px;font-size:16px}
 .x{background:none;color:var(--mut);width:100%;margin-top:6px}
 </style>
@@ -54,7 +56,7 @@ button{border:0;border-radius:12px;padding:11px;font:inherit;font-weight:bold;cu
   <img class="logo" src="logo.png" alt="Nadeen Beauty">
   <p>عناية بالشعر طبيعية 100% - الطلب عن طريق واتساب</p>
 </header>
-<div class="note">الأسعار غير شاملة الشحن</div>
+<div class="note">الشحن بيتحدد حسب المحافظة والمناطق المتطرفة</div>
 
 <h2>البوكسات</h2>
 <div class="boxes" id="boxes"></div>
@@ -67,6 +69,8 @@ button{border:0;border-radius:12px;padding:11px;font:inherit;font-weight:bold;cu
 <div class="sheet" id="sheet"><div class="panel">
   <h2 style="margin:0 0 8px">سلة الطلب</h2>
   <div id="items"></div>
+  <select id="gov" onchange="govChange()"></select>
+  <select id="area" onchange="renderTotal()" style="display:none"></select>
   <div class="total" id="total"></div>
   <input id="name" placeholder="الاسم">
   <input id="phone" placeholder="رقم الموبايل" inputmode="tel">
@@ -108,6 +112,41 @@ document.getElementById("products").innerHTML = products.map(p =>
   (p.scent ? scentSelect(p) : '')+
   btnHtml(p)+'</div>').join("");
 
+// أسعار الشحن: المحافظات اللي ملهاش مناطق (سعر واحد للمحافظة)
+const FEES = {"الإسكندرية":100,"القليوبية":100,"المنوفية":100,"الغربية":100,"الدقهلية":100,"كفر الشيخ":100,"دمياط":100,"بورسعيد":100,"الإسماعيلية":100,"السويس":100,"الشرقية":100,"البحيرة":100,"مرسى مطروح":100,"الفيوم":100,"بني سويف":100,"المنيا":100,"أسيوط":100,"سوهاج":100,"قنا":100,"الأقصر":125,"أسوان":125,"الوادي الجديد":125,"الغردقة":125,"السخنة":130,"سيناء":130};
+// القاهرة والجيزة: كل منطقة وسعرها (لتغيير سعر منطقة انقلها من قايمة لقايمة)
+const AREAS = {
+  "القاهرة": {"75": ["وسط البلد","مدينة نصر","مصر الجديده","المطرية","عين شمس","حدائق القبه","منشية الصدر","العباسية","الضاهر","باب الشعرية","الزاوية الحمراء","العتبة","رمسيس","شبرا مصر","التحرير","السيدة زينب","الملك الصالح","مصر القديمه","دار السلام","الفسطاط","المعادي","المقطم","منشية ناصر","المنيل","جاردن سيتي","الموسكي","كوبري القبه","البساتين","حدائق المعادي","ثكنات المعادي","زهراء المعادي","المعادي الجديده","صقر قريش","الاتوستراد","المعراج","الهضبة الوسطى","زهراء مدينه نصر","شيراتون","النزهة الجديدة","القلعه","الحلمية الجديدة","الفجاله","القصر العيني","الشرابية","الزيتون","حلمية الزيتون","الاميرية","الدمرداش","جسر السويس","الدراسة","باب اللوق","بولاق ابو العلا","السيدة عائشة","كوتسيكا","دائري المعادي"],
+    "90": ["حلوان","حدائق حلوان","وادي حوف","١٥ مايو","طره","التجمع الثالث","التجمع الخامس","التجمع السادس","التجمع الاول","الرحاب","مدينتي","بدر","الشروق","المستقبل","العبور","العبور الجديدة","السلام","عزبة النخل","المرج","المرج الجديدة","الخصوص","القلج","الجبل الاصفر","شبرا الخيمة","باسوس","بلقيس","التبين","كفر العلو","المعصره","جاردينيا سيتي"]},
+  "الجيزة": {"75": ["المهندسين","الدقي","امبابه","الزمالك","فيصل","الهرم","جزيرة محمد","البراجيل","بولاق الدكرور","ارض اللواء","صفط اللبن","زنين","العجوزه","العمرانيه","الكيت كات","جزيرة الدهب","البحر الاعظم"],
+    "90": ["٦ اكتوبر","الشيخ زايد","الرماية","حدائق الاهرام","الصحراوي","حدائق اكتوبر","هرم سيتي","طريق الواحات","المنيب","ابو النمرس","منيل شيحة","المنوات","طموه","الحوامدية","البدرشين","اطفيح","الصف","العياط","الوراق","كرداسه","المنصورية","منشأه القناطر","اوسيم","وردان","المناشي","طناش","سقيل","شبرامنت","بشتيل","بني يوسف","برطس","الجلاتمة","كفر حجازي","ام دينار","سقارة","حي الاشجار","الفردوس","دريم","غرب سوميد","الحي المتميز","التوسعات الشمالية","ال ٨٠٠ فدان","دجلة بالمز","دهشور","ابو رواش","القرية الذكية"]}
+};
+const govNames = ["القاهرة","الجيزة"].concat(Object.keys(FEES));
+document.getElementById("gov").innerHTML = '<option value="">اختار المحافظة</option>' + govNames.map(g=>'<option>'+g+'</option>').join("");
+function areaFees(g){ const o = {}; for(const f in AREAS[g]) AREAS[g][f].forEach(n => { o[n] = +f; }); return o; }
+function govChange(){
+  const g = document.getElementById("gov").value, a = document.getElementById("area");
+  if(AREAS[g]){
+    const names = Object.keys(areaFees(g)).sort((x,y)=>x.localeCompare(y,"ar"));
+    a.innerHTML = '<option value="">اختار المنطقة</option>' + names.map(n=>'<option>'+n+'</option>').join("");
+    a.style.display = "block";
+  } else { a.innerHTML = ""; a.style.display = "none"; }
+  renderTotal();
+}
+function shipFee(){
+  const g = document.getElementById("gov").value;
+  if(!g) return null;
+  if(AREAS[g]){ const n = document.getElementById("area").value; return n ? areaFees(g)[n] : null; }
+  return FEES[g];
+}
+function renderTotal(){
+  const f = shipFee(), g = document.getElementById("gov").value;
+  document.getElementById("total").innerHTML =
+    '<div>المنتجات: '+sum()+' جنيه</div>'+
+    '<div>'+(f===null ? 'الشحن: '+(g ? 'اختار المنطقة' : 'اختار المحافظة') : 'الشحن: '+f+' جنيه')+'</div>'+
+    '<div>'+(f===null ? 'الإجمالي: '+sum()+' جنيه + الشحن' : 'الإجمالي: '+(sum()+f)+' جنيه')+'</div>';
+}
+
 function add(id){
   const item = [...boxes,...products].find(x=>x.id===id);
   if(!item || item.soldout) return;
@@ -129,10 +168,10 @@ function count(){ return Object.values(cart).reduce((a,i)=>a+i.qty,0); }
 function refresh(){
   const bar = document.getElementById("bar");
   bar.style.display = count() ? "block" : "none";
-  document.getElementById("barBtn").textContent = "السلة ("+count()+") - "+sum()+" جنيه";
+  document.getElementById("barBtn").textContent = "السلة ("+count()+") - "+sum()+" جنيه + الشحن";
   document.getElementById("items").innerHTML = Object.entries(cart).map(([k,i]) =>
     '<div class="row"><span>'+i.name+'<br><small>'+i.price*i.qty+' جنيه</small></span><span class="qty"><button onclick="change(\''+k.replace(/'/g,"\\'")+'\',-1)">-</button>'+i.qty+'<button onclick="change(\''+k.replace(/'/g,"\\'")+'\',1)">+</button></span></div>').join("");
-  document.getElementById("total").textContent = "الإجمالي: "+sum()+" جنيه (غير شامل الشحن)";
+  renderTotal();
   if(!count()) closeCart();
 }
 function openCart(){ document.getElementById("sheet").classList.add("on"); }
@@ -143,9 +182,15 @@ function send(){
   const n = document.getElementById("name").value.trim();
   const p = document.getElementById("phone").value.trim();
   const a = document.getElementById("addr").value.trim();
+  const f = shipFee();
+  if(f === null){ alert("اختار المحافظة والمنطقة الأول"); return; }
+  const g = document.getElementById("gov").value;
+  const ar = AREAS[g] ? " - "+document.getElementById("area").value : "";
   let t = "أهلاً نادين بيوتي، عاوز أطلب:\n";
   Object.values(cart).forEach(i => { t += "- "+i.name+" × "+i.qty+" = "+i.price*i.qty+" جنيه\n"; });
-  t += "\nالإجمالي: "+sum()+" جنيه (غير شامل الشحن)\n";
+  t += "\nالمنتجات: "+sum()+" جنيه\n";
+  t += "الشحن ("+g+ar+"): "+f+" جنيه\n";
+  t += "الإجمالي: "+(sum()+f)+" جنيه\n";
   if(n) t += "الاسم: "+n+"\n";
   if(p) t += "الموبايل: "+p+"\n";
   if(a) t += "العنوان: "+a+"\n";
